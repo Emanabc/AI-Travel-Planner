@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Travel Planner</title>
+    
+    <!-- Main application stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+
+</head>
+<body>
+    <!-- Navigation bar at the top of the page -->
+    <nav class="site-nav">
+        <div class="logo">AI Travel Planner</div>
+        <!-- Links to different pages of the application -->
+        <ul>
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="{{ url_for('login_page') }}">Login</a></li>
+            <li><a href="{{ url_for('register_page') }}">Register</a></li>
+            <li><a href="{{ url_for('profile_page') }}">Profile</a></li>
+            <li><a href="{{ url_for('admin_page') }}">Admin</a></li>
+            <li id="navLogin"><a href="{{ url_for('login_page') }}">Login</a></li>
+            <li id="navRegister"><a href="{{ url_for('register_page') }}">Register</a></li>
+            <li id="navUser" style="display:none;">
+             <span id="navUserName" style="color:#a8edea; margin-right:8px;"></span>
+            <button onclick="logout()" class="logout-btn" type="button">Logout</button>
+    </li>
+        
+        </ul>
+    </nav>
+
+    <!-- Hero section with background image and main call-to-action -->
+    <header class="hero">
+        <!-- Background image (responsive full-screen) -->
+        <div class="hero-bg-image"></div>
+        
+        <!-- Dark overlay on top of background to improve text readability -->
+        <div class="hero-scrim"></div>
+        
+        <!-- Decorative animated orbs for visual appeal -->
+        <div class="hero-orb hero-orb-one"></div>
+        <div class="hero-orb hero-orb-two"></div>
+
+        <!-- Main hero content: heading, description, and search controls -->
+        <div class="hero-content">
+            <!-- Badge label for the hero section -->
+            <span class="hero-badge">AI-Powered Journey Design</span>
+            <h1>Plan Smarter, Travel Better</h1>
+            <p class="hero-subtitle">AI Powered Personalized Travel Planning</p>
+            <p class="hero-description">
+                Search destinations, compare budgets, explore live travel insights, and generate editable itineraries
+                from one polished planning experience.
+            </p>
+
+            <!-- Search box where users can enter destination or budget queries -->
+            <div class="search-box hero-search-shell">
+                <input
+                    type="text"
+                    id="searchQuery"
+                    placeholder="Search by destination, region, type or budget"
+                >
+                <!-- Button that triggers the smartSearch() function when clicked -->
+                <button type="button" id="searchBtn" class="search-btn">Search</button> <!-- FIXED -->
+            </div>
+
+            <!-- Call-to-action buttons for getting recommendations -->
+            <div class="hero-actions">
+                <!-- Button that triggers the getRecommendations() function -->
+                <button type="button" id="recommendBtn" class="ai-btn hero-btn"> <!-- FIXED -->
+                    Get AI Recommendations
+                </button>
+            </div>
+            <!-- 🔥 ADDED: Dynamic UI Section -->
+       
+
+            <!-- Three highlight boxes showing key features -->
+            <div class="hero-highlights">
+                <div class="hero-highlight">
+                    <strong>Smart Search</strong>
+                    <span>Destination discovery in seconds</span>
+                </div>
+                <div class="hero-highlight">
+                    <strong>Budget Clarity</strong>
+                    <span>Instant trip cost breakdowns</span>
+                </div>
+                <div class="hero-highlight">
+                    <strong>Editable Plans</strong>
+                    <span>Flexible itineraries for every trip</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Section for filtering and discovering destinations by region -->
+    <section class="near-section reveal">
+        <div class="section-heading">
+            <span class="section-tag">Discover</span>
+            <h2 class="near-heading">Find Destinations Near You</h2>
+            <p>Choose a region and instantly browse travel spots curated for your next getaway.</p>
+        </div>
+
+        <!-- Controls for selecting region and showing nearby/popular destinations -->
+        <div class="near-controls">
+            <!-- Dropdown menu to select a region in Pakistan -->
+            <select id="regionSelect" class="region-select">
+                <option value="Gilgit Baltistan">Gilgit Baltistan</option>
+                <option value="Punjab">Punjab</option>
+                <option value="Balochistan">Balochistan</option>
+            </select>
+
+            <!-- Button to show destinations near user's location -->
+            <button type="button" id="nearMeBtn">Near Me 📍</button>
+            
+            <!-- Button to load and display top/popular destinations -->
+            <button type="button" id="topDestinationsBtn">Top Destinations 🔥</button>
+        </div>
+    </section>
+
+
+
+    <!-- Section where search results and destination cards are displayed -->
+    <section class="results-section">
+        <div class="section-heading">
+            <span class="section-tag">Explore</span>
+            <h2>Recommended Destinations</h2>
+            <p>Beautiful cards with maps, weather, restaurants, events, budgets, and itinerary actions all in one place.</p>
+        </div>
+
+        <!-- Container where destination cards will be inserted by JavaScript -->
+        <div class="card-container" id="results"></div>
+        
+        <!-- Container for displaying budget comparison tables -->
+        <div id="budgetTableContainer" class="legacy-budget-container"></div>
+    </section>
+
+    <!-- Main planning section with itinerary generator and travel insights -->
+    <section class="planner-section">
+        <!-- Left card: Itinerary planning and generation tool -->
+        <div class="planner-card planner-card-main reveal">
+            <div class="section-heading section-heading-left">
+                <span class="section-tag">Planner</span>
+                <h2>Editable Itinerary Planner</h2>
+                <!-- Message showing which destination is selected, updates dynamically -->
+                <p id="selectedDestination">
+                    Generate a plan from the controls below or pick a destination card.
+                </p>
+            </div>
+
+            <!-- Input controls for customizing the itinerary -->
+            <div class="planner-controls">
+                <!-- Number input for how many days the trip will be -->
+                <input type="number" id="days" placeholder="Trip days" min="1" value="3">
+
+                <!-- Dropdown to select travel style/preference -->
+                <select id="preference">
+                    <option value="general">General</option>
+                    <option value="adventure">Adventure</option>
+                    <option value="relaxation">Relaxation</option>
+                    <option value="family">Family</option>
+                </select>
+
+                <!-- Button to trigger AI itinerary generation based on selected options -->
+                <button type="button" id="generateItineraryBtn" class="ai-btn planner-generate-btn"> <!-- FIXED -->
+                    Generate Itinerary
+                </button>
+            </div>
+
+            <!-- Container where the generated itinerary will be displayed -->
+            <div id="itineraryResult" class="itinerary-panel">
+                <p>Your generated itinerary will appear here and stay editable.</p>
+            </div>
+        </div>
+
+        <!-- Right card: Travel information and insights for selected destination -->
+        <div class="planner-card planner-card-side reveal">
+            <div class="section-heading section-heading-left">
+                <span class="section-tag">Insights</span>
+                <h2>Destination Insights</h2>
+                <p>Review restaurants, upcoming events, weather, and travel advisories for your selected destination.</p>
+            </div>
+
+            <!-- Container where travel info (restaurants, events, weather) will be displayed -->
+            <div id="travelInfoPanel" class="info-panel">
+                <p>Select a destination card to view restaurants, events, and travel advisories.</p>
+            </div>
+        </div>
+    </section>
+    <section class="map-section reveal" aria-labelledby="destinationMapTitle">
+        <div class="map-section-header">
+            <div class="section-heading section-heading-left map-heading">
+                <span class="section-tag">Map</span>
+                <h2 id="destinationMapTitle">Explore Destinations on the Map</h2>
+                <p>Pan, zoom, and preview featured destinations with a polished OpenStreetMap experience.</p>
+            </div>
+
+            <div class="map-quick-actions" id="mapQuickActions">
+                <button type="button" class="map-action-btn" data-lat="36.3167" data-lng="74.6500" data-name="Hunza">
+                    Hunza
+                </button>
+                <button type="button" class="map-action-btn" data-lat="35.2971" data-lng="75.6333" data-name="Skardu">
+                    Skardu
+                </button>
+                <button type="button" class="map-action-btn" data-lat="33.9070" data-lng="73.3943" data-name="Murree">
+                    Murree
+                </button>
+            </div>
+        </div>
+
+        <!-- Map container for Leaflet map -->
+        <div id="map" style="height: 400px; width: 100%; border-radius: 8px; margin-top: 20px;"></div>
+    </section>
+
+    <!-- ADDED: Main container for dynamic content rendering -->
+    <div id="dynamicContent" aria-live="polite"></div> <!-- FIXED -->
+
+
+     <!-- Feedback section where users can submit their comments and suggestions -->
+    <section class="feedback-section">
+        <h2>Give Your Feedback</h2>
+
+        <!-- Form for collecting user feedback -->
+        <div class="feedback-form">
+            <!-- Input field for user's name -->
+            <input type="text" id="fb_name" placeholder="Your Name">
+            
+            <!-- Input field for user's email -->
+            <input type="email" id="fb_email" placeholder="Your Email">
+            
+            <!-- Text area for the feedback message -->
+            <textarea id="fb_message" placeholder="Write your feedback..."></textarea>
+
+            <!-- Button that triggers the submitFeedback() function when clicked -->
+            <button type="button" id="submitFeedbackBtn">Submit Feedback</button> <!-- FIXED -->
+        </div>
+
+        <!-- Container where success/error messages will be displayed after feedback submission -->
+        <div id="feedbackStatus"></div>
+    </section>
+
+
+    <!-- Footer with copyright information -->
+    <footer class="site-footer">
+        <p>Copyright 2026 AI Travel Planner | Final Year Project</p>
+    </footer>
+   <link rel="stylesheet" href="{{ url_for('static', filename='leaflet/leaflet.css') }}">
+<script src="{{ url_for('static', filename='leaflet/leaflet.js') }}"></script>
+    <!-- Main application script -->
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+    <div class="ai-badge">
+    🤖 AI Recommendation Engine Active <br>
+    NLP + Machine Learning Modules Loaded Successfully
+</div>
+
+<script>
+    // Navbar login/logout state check
+    (function() {
+        const userId = localStorage.getItem("user_id");
+        const userName = localStorage.getItem("user_name");
+
+        if (userId) {
+            
+            document.getElementById("navLogin").style.display = "none";
+            document.getElementById("navRegister").style.display = "none";
+            document.getElementById("navUser").style.display = "flex";
+            const nameEl = document.getElementById("navUserName");
+            if (nameEl && userName) nameEl.textContent = "Hi, " + userName;
+        }
+    })();
+</script>
+</body>
+</html>

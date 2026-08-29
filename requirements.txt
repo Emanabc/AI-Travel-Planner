@@ -1,0 +1,13 @@
+Flask
+gunicorn
+flask-cors
+Flask-MySQLdb
+python-dotenv
+requests
+Werkzeug
+numpy
+pandas
+scikit-learn
+nltk
+spacy
+tensorflow

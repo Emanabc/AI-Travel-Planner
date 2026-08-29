@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<!--
+  Travel preferences (POST /save-preferences) and read-only saved itineraries (/my-plans). Logout clears local storage.
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - AI Travel Planner</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="profile-page">
+    <!-- Preferences -->
+    <section class="profile-layout">
+        <div class="form-container profile-card">
+            <div class="section-heading section-heading-left">
+                <span class="section-tag">Profile</span>
+                <h1>Travel Preferences</h1>
+                <p>Save your personal travel style so recommendations feel more relevant each time.</p>
+            </div>
+
+            <select id="travel_style">
+                <option value="Adventure">Adventure</option>
+                <option value="Relaxation">Relaxation</option>
+                <option value="Family">Family</option>
+            </select>
+
+            <input type="number" id="budget" placeholder="Budget (PKR)">
+            <input type="number" id="duration" placeholder="Duration (days)">
+
+            <button id="saveBtn" class="primary-btn" type="button">Save Preferences</button>
+            <button id="logoutBtn" class="logout-btn" type="button">Logout</button>
+
+            <p id="message" class="profile-message"></p>
+        </div>
+    </section>
+
+    <!-- Saved Plans -->
+    <section class="saved-plans-section">
+        <div class="saved-plans-container">
+            <div class="section-heading section-heading-left">
+                <span class="section-tag">Plans</span>
+                <h2>My Saved Travel Plans</h2>
+                <p>Review your previously saved itineraries in one place.</p>
+            </div>
+
+            <div id="savedPlans">
+                <p>Loading saved plans...</p>
+            </div>
+        </div>
+    </section>
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>

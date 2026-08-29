@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<!--
+  Email/password and optional Google Identity login. main.js provides loginUser(), googleLogin(), initGoogleLogin().
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login | AI Travel Planner</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+{% if google_login_enabled and google_client_id %}
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+{% endif %}
+</head>
+
+<body>
+
+    
+<!-- Navbar -->
+<nav>
+    <div class="logo">AI Travel Planner ✈️</div>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/register">Register</a></li>
+    </ul>
+</nav>
+
+<!-- Login Section -->
+<div class="form-container">
+
+    <h1>Welcome Back 👋</h1>
+    <p>Login and continue your next adventure</p>
+
+    <input type="email" id="email" placeholder="Enter your email">
+
+    <input type="password" id="password" placeholder="Enter your password">
+
+    <button class="primary-btn" onclick="loginUser()">Login</button>
+
+    <p style="margin:15px 0; color:#777;">OR</p>
+
+    <div
+        id="googleLoginContainer"
+        data-google-client-id="{{ google_client_id or '' }}"
+        style="display:flex;justify-content:center;margin-bottom:12px;"
+    ></div>
+
+    <button
+        id="googleFallbackButton"
+        onclick="googleLogin()"
+        style="background:#db4437;color:white;width:100%;padding:12px;border:none;border-radius:8px;cursor:pointer;">
+        Continue with Google
+    </button>
+
+    <p id="googleLoginStatus" style="margin-top:10px; color:#777; font-size:14px;"></p>
+
+    <p id="msg" style="margin-top:15px;"></p>
+
+    <p style="margin-top:20px;">
+        Don't have an account?
+        <a href="/register">Register Now</a>
+    </p>
+
+</div>
+
+<script src="{{ url_for('static', filename='main.js') }}"></script>
+
+</body>
+</html>
